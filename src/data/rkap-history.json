@@ -1,0 +1,14 @@
+{
+    "data": [
+        {
+            "updated_at": "10/10/2022 18:00",
+            "description": "Perubahan status",
+            "status": "KONTRAK"
+        },
+        {
+            "updated_at": "10/10/2022 18:00",
+            "description": "Perubahan nilai kontrak 10.000.000.000 ke 8.000.000.000",
+            "status": "KONTRAK"
+        }
+    ]
+}

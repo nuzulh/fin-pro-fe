@@ -1,0 +1,49 @@
+{
+    "data": [
+        {
+            "activity_code": "22.8201.9910000.001.620001401",
+            "budget_plan_no": "021/RPB/CDB-GDS/III/2022",
+            "budget_plan_name": "Proyek Pekerjaan PLN Kalimantan",
+            "unit": "Kantor Pusat",
+            "rab_value": 100000000,
+            "offer_value": 1000000,
+            "contract_value": 1000000,
+            "ba_value": 1000000,
+            "invoice_value": 1000000
+        },
+        {
+            "activity_code": "22.8201.9910000.001.620001402",
+            "budget_plan_no": "022/RPB/CDB-GDS/III/2022",
+            "budget_plan_name": "Proyek Pekerjaan PLN Depok",
+            "unit": "Kantor Pusat",
+            "rab_value": 100000000,
+            "offer_value": 1000000,
+            "contract_value": 1000000,
+            "ba_value": 1000000,
+            "invoice_value": null
+        },
+        {
+            "activity_code": "22.8201.9910000.001.620001403",
+            "budget_plan_no": "023/RPB/CDB-GDS/III/2022",
+            "budget_plan_name": "Proyek Pekerjaan PLN Tangerang",
+            "unit": "Kantor Pusat",
+            "rab_value": 100000000,
+            "offer_value": 1000000,
+            "contract_value": 1000000,
+            "ba_value": null,
+            "invoice_value": null
+        },
+        {
+            "activity_code": "22.8201.9910000.001.620001404",
+            "budget_plan_no": "024/RPB/CDB-GDS/III/2022",
+            "budget_plan_name": "Proyek Pekerjaan PLN Medan",
+            "unit": "Kantor Pusat",
+            "rab_value": 100000000,
+            "offer_value": 1000000,
+            "contract_value": null,
+            "ba_value": null,
+            "invoice_value": null
+        }
+    ]
+}
+  
