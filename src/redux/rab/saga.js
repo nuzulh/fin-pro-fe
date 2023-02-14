@@ -129,8 +129,7 @@ function* getRabProgresList() {
   try {
     const res = yield call(getRabProgresListRequest);
     if (!res.data.error) {
-      const items = yield call(getRabListRequest);
-      yield put(getRabProgresListSuccess(items.data));
+      yield put(getRabProgresListSuccess(res.data));
     } else {
       yield put(getRabProgresListError(res.data.errorMessage));
     }

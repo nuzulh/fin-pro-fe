@@ -49,7 +49,7 @@ const RabProgresListView = ({
           placeholder="Cari"
           onSearch={(val) => getRabListSearchAction(val)}
         />
-        <RabListHeader />
+        {/* <RabListHeader /> */}
         <Row>
           {loading ? (
             pageItems.map((item, index) => (
