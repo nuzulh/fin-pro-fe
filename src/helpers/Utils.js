@@ -229,8 +229,8 @@ export const slicePage = (items, currentPage, pageSize) => items.slice(
   currentPage * pageSize
 );
 
-export const countTax = (type, tax, sub_total) =>
-  type === "ppn" ? sub_total * (tax * 0.01) : sub_total * (tax * 0.005);
+export const countTax = (tax, sub_total) =>
+  sub_total * (tax * 0.01);
 
 export const getCsvTemplate = (type) => {
   const link = document.createElement("a");

@@ -25,10 +25,11 @@ import { countTax, getCurrentUser } from "helpers/Utils";
 import Creatable from "react-select/creatable";
 import { NotificationManager } from "components/common/react-notifications";
 import { useLocation } from "react-router-dom";
+import { statusColor } from "constants/defaultValues";
 
 const PersekotForm = ({
-  getRabListAction,
-  rabItems,
+  getPersekotListAction,
+  persekotItems,
   loading,
   error,
   getCategoryListAction,
@@ -36,28 +37,19 @@ const PersekotForm = ({
   categoryItems,
   categoryLoading,
   categoryError,
-  loading2,
-  getPersekotListAction,
-  persekotItems,
-  persekotLoading,
-  persekotError,
   onSubmit,
 }) => {
   const user = getCurrentUser();
-  const location = useLocation();
+  const state = useLocation().state;
 
   const [data, setData] = useState({
     persekot_no: "",
     persekot_name: "",
     persekot_value: 0,
-    ppn: 0,
-    pph: 0,
     sub_total: 0,
     rab_id: "",
     persekot_detail: [],
   });
-  const [rabOptions, setRabOptions] = useState([]);
-  const [selectedRab, setSelectedRab] = useState(null);
   const [rows, setRows] = useState([1, 2]);
   const [selectedOption, setSelectedOption] = useState(
     rows.map((row) => {
@@ -69,23 +61,6 @@ const PersekotForm = ({
       };
     })
   );
-  const [ppn, setPpn] = useState(11);
-  const [pph, setPph] = useState(5);
-  const [isDrafted, setIsDrafted] = useState(false);
-  const [persekot_id, setPersekotId] = useState(null);
-
-  const selectRab = (e) => {
-    const selected = rabItems
-      .filter((x) => x.rab_id === e.value)
-      .map((x) => ({
-        ...x,
-        key: x.rab_id,
-        label: `${x.rab_no} - ${x.rab_name}`,
-        value: x.rab_id,
-      }))[0];
-    setSelectedRab(selected);
-    setData({ ...data, rab_id: selected.rab_id });
-  };
 
   const deleteRow = (row) => {
     if (rows.length > 1) {
@@ -126,29 +101,10 @@ const PersekotForm = ({
   };
 
   useEffect(() => {
-    getRabListAction();
     getCategoryListAction("persekot");
-
-    if (location.state) {
-      const { persekot_id, status } = location.state;
-      setPersekotId(persekot_id);
-      getPersekotListAction(persekot_id, status);
-      setIsDrafted(true);
-    }
+    const { persekot_id, status } = state;
+    getPersekotListAction(persekot_id, status);
   }, []);
-
-  useEffect(() => {
-    if (rabItems) {
-      const options = rabItems
-        .filter((x) => x.status === "APPROVED")
-        .map((item) => ({
-          key: item.rab_id,
-          label: `${item.rab_no} - ${item.rab_name}`,
-          value: item.rab_id,
-        }));
-      setRabOptions(options);
-    }
-  }, [rabItems]);
 
   useEffect(() => {
     let sub_total = 0;
@@ -157,38 +113,22 @@ const PersekotForm = ({
         sub_total += item.persekot_detail_value;
       }
     });
-    const total = sub_total + data.ppn + data.pph;
+    const total = sub_total;
 
-    if (isDrafted) {
+    if (loading && persekotItems && persekotItems[0]) {
       if (total > persekotItems[0].persekot_balance) {
         NotificationManager.warning("Nilai yang diajukan melebihi saldo Persekot!", "Peringatan", 3000, null, null, "");
       } else {
         setData({
           ...data,
           sub_total,
-          persekot_value: total,
-        });
-      }
-    } else {
-      if (selectedRab && total > selectedRab.rab_value) {
-        NotificationManager.warning("Nilai yang diajukan melebihi nilai RAB!", "Peringatan", 3000, null, null, "");
-      } else if (selectedRab === null && sub_total > 0) {
-        NotificationManager.warning("RAB belum dipilih!", "Peringatan", 3000, null, null, "");
-      } else {
-        setData({
-          ...data,
-          sub_total,
+          persekot_name: persekotItems[0].persekot_name,
+          rab_id: persekotItems[0].rab_id,
           persekot_value: total,
         });
       }
     }
-  }, [data.persekot_value, data.ppn, data.pph, selectedOption, selectedRab]);
-
-  useEffect(() => {
-    const ppn_value = countTax("ppn", ppn, data.sub_total);
-    const pph_value = countTax("pph", pph, data.sub_total);
-    setData({ ...data, ppn: ppn_value, pph: pph_value });
-  }, [ppn, pph, data.sub_total]);
+  }, [data.persekot_value, selectedOption]);
 
   useEffect(() => {
     if (error !== "") {
@@ -199,118 +139,71 @@ const PersekotForm = ({
     }
   }, [error, categoryError]);
 
-  return (
+  return persekotItems && persekotItems[0] && persekotItems[0].rab ? (
     <>
       <Form onSubmit={(e) => {
         e.preventDefault();
         onSubmit({
           ...data,
-          persekot_id,
+          persekot_id: persekotItems[0].persekot_id,
           persekot_detail: selectedOption,
         });
       }}>
         <div className="d-flex align-items-center justify-content-between">
           <ItemNoForm type="Persekot" onChange={(val) => setData({ ...data, persekot_no: val })} />
-          {isDrafted && (
-            <h6>
-              Status: <Badge pill color="info">DRAFTED</Badge>
-            </h6>
-          )}
+          <h6>
+            Status: <Badge pill color={statusColor[persekotItems[0].status]}>{persekotItems[0].status}</Badge>
+          </h6>
         </div>
         <Card className="mb-4">
-          {persekotLoading ? (
-            <CardBody>
-              <h5 className="font-weight-bold mb-4">Detail</h5>
-              <FormGroup>
-                <Label>Judul Persekot</Label>
-                {isDrafted ? (
-                  <p className="pl-3">{persekotItems[0].persekot_name}</p>
-                ) : (
-                  <Input
-                    required
-                    className="rounded-lg"
-                    value={data.persekot_name}
-                    onChange={(e) =>
-                      setData({ ...data, persekot_name: e.target.value })
-                    }
-                  />
-                )}
-              </FormGroup>
-              {isDrafted && persekotItems[0].rab ? (
-                <>
-                  <FormGroup>
-                    <Label>No. RAB</Label>
-                    <p className="pl-3">{persekotItems[0].rab.rab_no}</p>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Judul RAB</Label>
-                    <p className="pl-3">{persekotItems[0].rab.rab_name}</p>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Nilai RAB</Label>
-                    <p className="pl-3 font-weight-bold">
-                      <CurrencyFormat
-                        prefix="Rp"
-                        displayType="text"
-                        thousandSeparator={true}
-                        value={persekotItems[0].rab.rab_value}
-                      />
-                    </p>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Saldo Persekot</Label>
-                    <p className="pl-3 font-weight-bold">
-                      <CurrencyFormat
-                        prefix="Rp"
-                        displayType="text"
-                        thousandSeparator={true}
-                        value={persekotItems[0].persekot_balance}
-                      />
-                    </p>
-                  </FormGroup>
-                </>
-              ) : (
-                <>
-                  <FormGroup>
-                    <Label>Pilih RAB</Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      placeholder={loading ? "Pilih" : "Loading..."}
-                      value={selectedRab ? selectedRab : ""}
-                      onChange={selectRab}
-                      options={rabOptions}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Nilai RAB</Label>
-                    <InputGroup>
-                      <InputGroupAddon addonType="append">
-                        <div
-                          className="d-flex align-items-center px-3"
-                          style={{
-                            background: "#E0E7EC",
-                          }}
-                        >
-                          IDR
-                        </div>
-                      </InputGroupAddon>
-                      <CurrencyFormat
-                        readOnly={true}
-                        thousandSeparator={true}
-                        prefix={"Rp"}
-                        className="form-control"
-                        value={loading && selectedRab ? selectedRab.rab_value : 0}
-                      />
-                    </InputGroup>
-                  </FormGroup>
-                </>
-              )}
-            </CardBody>
-          ) : (
-            <div className="loading position-relative my-4" />
-          )}
+          <CardBody>
+            <h5 className="font-weight-bold mb-4">Detail</h5>
+            <FormGroup>
+              <Label>Judul Persekot</Label>
+              <p className="pl-3">{persekotItems[0].persekot_name}</p>
+            </FormGroup>
+            <FormGroup>
+              <Label>No. RAB</Label>
+              <p className="pl-3">{persekotItems[0].rab.rab_no}</p>
+            </FormGroup>
+            <FormGroup>
+              <Label>Judul RAB</Label>
+              <p className="pl-3">{persekotItems[0].rab.rab_name}</p>
+            </FormGroup>
+            <FormGroup>
+              <Label>Nilai RAB</Label>
+              <p className="pl-3 font-weight-bold">
+                <CurrencyFormat
+                  prefix="Rp"
+                  displayType="text"
+                  thousandSeparator={true}
+                  value={persekotItems[0].rab.rab_value}
+                />
+              </p>
+            </FormGroup>
+            <FormGroup>
+              <Label>Nilai Persekot</Label>
+              <p className="pl-3 font-weight-bold">
+                <CurrencyFormat
+                  prefix="Rp"
+                  displayType="text"
+                  thousandSeparator={true}
+                  value={persekotItems[0].persekot_value}
+                />
+              </p>
+            </FormGroup>
+            <FormGroup>
+              <Label>Saldo Persekot</Label>
+              <p className="pl-3 font-weight-bold">
+                <CurrencyFormat
+                  prefix="Rp"
+                  displayType="text"
+                  thousandSeparator={true}
+                  value={persekotItems[0].persekot_balance}
+                />
+              </p>
+            </FormGroup>
+          </CardBody>
         </Card>
         <Card className="mb-4">
           <CardBody>
@@ -445,66 +338,6 @@ const PersekotForm = ({
             >
               Tambah transaksi
             </Button>
-            <Row>
-              <Colxx xxs="2">
-                <FormGroup>
-                  <Label>PPN</Label>
-                  <CurrencyFormat
-                    required={true}
-                    suffix="%"
-                    className="form-control"
-                    value={ppn}
-                    onValueChange={(e) => {
-                      const { value } = e;
-                      const result = parseInt(value) ? parseInt(value) : 0;
-                      setPpn(result);
-                    }}
-                  />
-                </FormGroup>
-              </Colxx>
-              <Colxx xxs="10">
-                <FormGroup>
-                  <Label>Nilai PPN</Label>
-                  <CurrencyFormat
-                    readOnly={true}
-                    thousandSeparator={true}
-                    prefix={"Rp"}
-                    className="form-control"
-                    value={data.ppn}
-                  />
-                </FormGroup>
-              </Colxx>
-            </Row>
-            <Row>
-              <Colxx xxs="2">
-                <FormGroup>
-                  <Label>PPH</Label>
-                  <CurrencyFormat
-                    required={true}
-                    suffix="%"
-                    className="form-control"
-                    value={pph}
-                    onValueChange={(e) => {
-                      const { value } = e;
-                      const result = parseInt(value) ? parseInt(value) : 0;
-                      setPph(result);
-                    }}
-                  />
-                </FormGroup>
-              </Colxx>
-              <Colxx xxs="10">
-                <FormGroup>
-                  <Label>Nilai PPH</Label>
-                  <CurrencyFormat
-                    readOnly={true}
-                    thousandSeparator={true}
-                    prefix={"Rp"}
-                    className="form-control"
-                    value={data.pph}
-                  />
-                </FormGroup>
-              </Colxx>
-            </Row>
             <FormGroup>
               <Label>Total biaya yang diajukan</Label>
               <InputGroup>
@@ -547,7 +380,7 @@ const PersekotForm = ({
             </Row>
           </CardBody>
         </Card>
-        {loading2 ? (
+        {loading ? (
           <Button size="lg" color="primary w-100 btn-shadow">
             Ajukan
           </Button>
@@ -556,25 +389,23 @@ const PersekotForm = ({
         )}
       </Form>
     </>
+  ) : (
+    <div className="loading" />
   );
 };
 
-const mapStateToProps = ({ rab, category, persekot }) => {
+const mapStateToProps = ({ category, persekot }) => {
   return {
-    rabItems: rab.rabItems,
-    loading: rab.loading,
-    error: rab.error,
+    persekotItems: persekot.persekotItems,
+    loading: persekot.loading,
+    error: persekot.error,
     categoryItems: category.categoryItems,
     categoryLoading: category.loading,
     categoryError: category.error,
-    persekotItems: persekot.persekotItems,
-    persekotLoading: persekot.loading,
-    persekotError: persekot.error,
   };
 }
 export default injectIntl(
   connect(mapStateToProps, {
-    getRabListAction: getRabList,
     getCategoryListAction: getCategoryList,
     addCategoryItemAction: addCategoryItem,
     getPersekotListAction: getPersekotList,

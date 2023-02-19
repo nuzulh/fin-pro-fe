@@ -81,7 +81,7 @@ const FeeDetailItem = ({
               {showDetail && (
                 <>
                   <FormGroup className="mt-3">
-                    <Label>Judul Sppd</Label>
+                    <Label>Judul Fee Project</Label>
                     <p className="pl-3">{feeItems[0].fee_project_name}</p>
                   </FormGroup>
                   <FormGroup>
@@ -105,7 +105,7 @@ const FeeDetailItem = ({
                     </p>
                   </FormGroup>
                   <FormGroup>
-                    <Label>Nilai Sppd</Label>
+                    <Label>Nilai Fee Project</Label>
                     <p className="pl-3">
                       <CurrencyFormat
                         className="font-weight-bold"
@@ -178,36 +178,6 @@ const FeeDetailItem = ({
                   ))}
                 </tbody>
               </Table>
-              <Row>
-                <Colxx xxs="6">
-                  <FormGroup>
-                    <Label>PPN</Label>
-                    <p className="pl-3">
-                      <CurrencyFormat
-                        className="font-weight-bold"
-                        prefix="Rp"
-                        thousandSeparator={true}
-                        displayType={"text"}
-                        value={feeItems[0].ppn}
-                      />
-                    </p>
-                  </FormGroup>
-                </Colxx>
-                <Colxx xxs="6">
-                  <FormGroup>
-                    <Label>PPH</Label>
-                    <p className="pl-3">
-                      <CurrencyFormat
-                        className="font-weight-bold"
-                        prefix="Rp"
-                        thousandSeparator={true}
-                        displayType={"text"}
-                        value={feeItems[0].pph}
-                      />
-                    </p>
-                  </FormGroup>
-                </Colxx>
-              </Row>
               <FormGroup>
                 <Label className="font-weight-bold">Total</Label>
                 <p className="pl-3">

@@ -32,7 +32,7 @@ const getPersekotListRequest = async (persekot_id, status) => {
       .catch((err) => err.response);
   }
   return await axios
-    .get(`${servicePath}/persekot`, {
+    .get(`${servicePath}/persekot${status ? `?status=${status}` : ""}`, {
       headers: {
         "X-Secured-With": user.token,
       }
@@ -104,7 +104,7 @@ function* editPersekotItem({ payload }) {
   try {
     const res = yield call(editPersekotItemRequest, id, item);
     if (!res.data.error) {
-      const items = yield call(getPersekotListRequest);
+      const items = yield call(getPersekotListRequest, null, item.status);
       yield put(editPersekotItemSuccess(items.data));
     } else {
       yield put(editPersekotItemError(res.data.errorMessage));

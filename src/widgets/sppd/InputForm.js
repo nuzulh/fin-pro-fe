@@ -38,8 +38,6 @@ const SppdForm = ({
   const location = useLocation();
   const [data, setData] = useState({
     sppd_no: "",
-    ppn: 0,
-    pph: 0,
     sub_total: 0,
     sppd_value: 0,
     sppd_detail: [],
@@ -58,8 +56,6 @@ const SppdForm = ({
       };
     })
   );
-  const [ppn, setPpn] = useState(11);
-  const [pph, setPph] = useState(5);
   const [showUpload, setShowUpload] = useState({
     show: false,
     id: "",
@@ -121,7 +117,7 @@ const SppdForm = ({
         sub_total += item.sppd_detail_value;
       }
     });
-    const total = sub_total + data.ppn + data.pph;
+    const total = sub_total;
 
     if (sppdItems && total > sppdItems[0].sppd_value) {
       NotificationManager.warning("Nilai yang diajukan melebihi nilai SPPD!", "Peringatan", 3000, null, null, "");
@@ -132,14 +128,7 @@ const SppdForm = ({
         sppd_value: total,
       });
     }
-  }, [data.sppd_value, data.ppn, data.pph, selectedOption]);
-
-
-  useEffect(() => {
-    const ppn_value = countTax("ppn", ppn, data.sub_total);
-    const pph_value = countTax("pph", pph, data.sub_total);
-    setData({ ...data, ppn: ppn_value, pph: pph_value });
-  }, [ppn, pph, data.sub_total]);
+  }, [data.sppd_value, selectedOption]);
 
   return (
     <>
@@ -382,66 +371,6 @@ const SppdForm = ({
             >
               Tambah transaksi
             </Button>
-            <Row>
-              <Colxx xxs="2">
-                <FormGroup>
-                  <Label>PPN</Label>
-                  <CurrencyFormat
-                    required={true}
-                    suffix="%"
-                    className="form-control"
-                    value={ppn}
-                    onValueChange={(e) => {
-                      const { value } = e;
-                      const result = parseInt(value) ? parseInt(value) : 0;
-                      setPpn(result);
-                    }}
-                  />
-                </FormGroup>
-              </Colxx>
-              <Colxx xxs="10">
-                <FormGroup>
-                  <Label>Nilai PPN</Label>
-                  <CurrencyFormat
-                    readOnly={true}
-                    thousandSeparator={true}
-                    prefix={"Rp"}
-                    className="form-control"
-                    value={data.ppn}
-                  />
-                </FormGroup>
-              </Colxx>
-            </Row>
-            <Row>
-              <Colxx xxs="2">
-                <FormGroup>
-                  <Label>PPH</Label>
-                  <CurrencyFormat
-                    required={true}
-                    suffix="%"
-                    className="form-control"
-                    value={pph}
-                    onValueChange={(e) => {
-                      const { value } = e;
-                      const result = parseInt(value) ? parseInt(value) : 0;
-                      setPph(result);
-                    }}
-                  />
-                </FormGroup>
-              </Colxx>
-              <Colxx xxs="10">
-                <FormGroup>
-                  <Label>Nilai PPH</Label>
-                  <CurrencyFormat
-                    readOnly={true}
-                    thousandSeparator={true}
-                    prefix={"Rp"}
-                    className="form-control"
-                    value={data.pph}
-                  />
-                </FormGroup>
-              </Colxx>
-            </Row>
             <FormGroup>
               <Label>Total</Label>
               <InputGroup>

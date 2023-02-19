@@ -29,7 +29,7 @@ const PersekotListView = ({
   const [isDraft, setIsDraft] = useState(window.location.toString().split("/").pop() === "view");
 
   useEffect(() => {
-    getPersekotListAction();
+    getPersekotListAction(null, isDraft ? "DRAFTED" : null);
   }, []);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const PersekotListView = ({
         setTotalPage(total);
         setPageItems(items);
       } else {
-        getPersekotListAction();
+        getPersekotListAction(null, isDraft ? "DRAFTED" : null);
       }
     }
   }, [persekotItems, currentPage]);

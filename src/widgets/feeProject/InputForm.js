@@ -39,7 +39,6 @@ const FeeForm = ({
 
   const [data, setData] = useState({
     fee_project_no: "",
-    ppn: 0,
     pph: 0,
     sub_total: 0,
     fee_project_value: 0,
@@ -60,8 +59,6 @@ const FeeForm = ({
       };
     })
   );
-  const [ppn, setPpn] = useState(11);
-  const [pph, setPph] = useState(5);
   const [showUpload, setShowUpload] = useState({
     show: false,
     id: "",
@@ -125,9 +122,9 @@ const FeeForm = ({
         sub_total += item.fee_project_detail_value;
       }
     });
-    const total = sub_total + data.ppn + data.pph;
+    const total = sub_total;
 
-    if (feeItems && total > feeItems[0].fee_project_value) {
+    if (feeItems && total + feeItems[0].pph > feeItems[0].fee_project_value) {
       NotificationManager.warning("Nilai yang diajukan melebihi nilai Fee Project!", "Peringatan", 3000, null, null, "");
     } else {
       setData({
@@ -136,14 +133,7 @@ const FeeForm = ({
         fee_project_value: total,
       });
     }
-  }, [data.fee_project_value, data.ppn, data.pph, selectedOption]);
-
-
-  useEffect(() => {
-    const ppn_value = countTax("ppn", ppn, data.sub_total);
-    const pph_value = countTax("pph", pph, data.sub_total);
-    setData({ ...data, ppn: ppn_value, pph: pph_value });
-  }, [ppn, pph, data.sub_total]);
+  }, [data.fee_project_value, selectedOption]);
 
   return (
     <>
@@ -411,88 +401,56 @@ const FeeForm = ({
             >
               Tambah transaksi
             </Button>
-            <Row>
-              <Colxx xxs="2">
+            {loading && feeItems && feeItems[0] ? (
+              <>
                 <FormGroup>
-                  <Label>PPN</Label>
-                  <CurrencyFormat
-                    required={true}
-                    suffix="%"
-                    className="form-control"
-                    value={ppn}
-                    onValueChange={(e) => {
-                      const { value } = e;
-                      const result = parseInt(value) ? parseInt(value) : 0;
-                      setPpn(result);
-                    }}
-                  />
+                  <Label>Nilai PPh</Label>
+                  <InputGroup>
+                    <InputGroupAddon addonType="append">
+                      <div
+                        className="d-flex align-items-center px-3"
+                        style={{
+                          background: "#E0E7EC",
+                        }}
+                      >
+                        IDR
+                      </div>
+                    </InputGroupAddon>
+                    <CurrencyFormat
+                      readOnly={true}
+                      thousandSeparator={true}
+                      prefix={"Rp"}
+                      className="form-control"
+                      value={feeItems[0].pph}
+                    />
+                  </InputGroup>
                 </FormGroup>
-              </Colxx>
-              <Colxx xxs="10">
                 <FormGroup>
-                  <Label>Nilai PPN</Label>
-                  <CurrencyFormat
-                    readOnly={true}
-                    thousandSeparator={true}
-                    prefix={"Rp"}
-                    className="form-control"
-                    value={data.ppn}
-                  />
+                  <Label>Total</Label>
+                  <InputGroup>
+                    <InputGroupAddon addonType="append">
+                      <div
+                        className="d-flex align-items-center px-3"
+                        style={{
+                          background: "#E0E7EC",
+                        }}
+                      >
+                        IDR
+                      </div>
+                    </InputGroupAddon>
+                    <CurrencyFormat
+                      readOnly={true}
+                      thousandSeparator={true}
+                      prefix={"Rp"}
+                      className="form-control"
+                      value={data.fee_project_value + feeItems[0].pph}
+                    />
+                  </InputGroup>
                 </FormGroup>
-              </Colxx>
-            </Row>
-            <Row>
-              <Colxx xxs="2">
-                <FormGroup>
-                  <Label>PPH</Label>
-                  <CurrencyFormat
-                    required={true}
-                    suffix="%"
-                    className="form-control"
-                    value={pph}
-                    onValueChange={(e) => {
-                      const { value } = e;
-                      const result = parseInt(value) ? parseInt(value) : 0;
-                      setPph(result);
-                    }}
-                  />
-                </FormGroup>
-              </Colxx>
-              <Colxx xxs="10">
-                <FormGroup>
-                  <Label>Nilai PPH</Label>
-                  <CurrencyFormat
-                    readOnly={true}
-                    thousandSeparator={true}
-                    prefix={"Rp"}
-                    className="form-control"
-                    value={data.pph}
-                  />
-                </FormGroup>
-              </Colxx>
-            </Row>
-            <FormGroup>
-              <Label>Total</Label>
-              <InputGroup>
-                <InputGroupAddon addonType="append">
-                  <div
-                    className="d-flex align-items-center px-3"
-                    style={{
-                      background: "#E0E7EC",
-                    }}
-                  >
-                    IDR
-                  </div>
-                </InputGroupAddon>
-                <CurrencyFormat
-                  readOnly={true}
-                  thousandSeparator={true}
-                  prefix={"Rp"}
-                  className="form-control"
-                  value={data.fee_project_value}
-                />
-              </InputGroup>
-            </FormGroup>
+              </>
+            ) : (
+              <div className="loading position-relative" />
+            )}
             <FormGroup>
               <Label>Dibuat oleh</Label>
               <Input readOnly className="rounded-lg" value={user.username} />

@@ -29,7 +29,7 @@ const getRpbListRequest = async (pkm_id, status) => {
       .catch((err) => err.response);
   }
   return await axios
-    .get(`${servicePath}/pkm`, {
+    .get(`${servicePath}/pkm${status ? `?status=${status}` : ""}`, {
       headers: {
         "X-Secured-With": user.token,
       }

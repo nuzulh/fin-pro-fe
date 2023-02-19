@@ -31,8 +31,6 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
     rab_no: "",
     rab_name: "",
     rab_value: 0,
-    ppn: 0,
-    pph: 0,
     sub_total: 0,
     rka_id: "",
     profit_estimation: 0,
@@ -49,11 +47,13 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
         type: "",
         name: "",
         value: 0,
+        ppn: 0,
+        pph: 0,
+        ppn_percentage: 0,
+        pph_percentage: 0.0,
       };
     })
   );
-  const [ppn, setPpn] = useState(11);
-  const [pph, setPph] = useState(5);
 
   const selectRka = (e) => {
     const selected = rkaItems
@@ -89,6 +89,10 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
             name: "",
             value: 0,
             type: "",
+            ppn: 0,
+            pph: 0,
+            ppn_percentage: 0,
+            pph_percentage: 0.0,
           },
         ]);
       setRows(newRows);
@@ -100,6 +104,10 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
         name: "",
         value: 0,
         type: "",
+        ppn: 0,
+        pph: 0,
+        ppn_percentage: 0,
+        pph_percentage: 0.0,
       });
       setRows(newRows);
       setSelectedOption(newOption);
@@ -123,15 +131,16 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
 
   useEffect(() => {
     if (selectedRka) {
-      let sub_total = 0;
+      let total = 0;
       selectedOption.forEach((item) => {
         if (item.value !== "") {
-          sub_total += item.value;
+          total += item.value;
+          if (item.type === "PKM") total += countTax(item.ppn_percentage, item.value);
+          if (item.type === "FEE_PROJECT") total += countTax(item.pph_percentage, item.value);
         }
       });
       const profit_estimation = selectedRka.rka_value - data.rab_value;
       const profit_percentage = ((profit_estimation / selectedRka.rka_value) * 100).toFixed(2);
-      const total = sub_total + data.ppn + data.pph;
 
       if (total > selectedRka.rka_value) {
         NotificationManager.warning("Nilai yang diajukan melebihi nilai RKA!", "Peringatan", 3000, null, null, "");
@@ -140,18 +149,11 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
           ...data,
           profit_estimation,
           profit_percentage,
-          sub_total,
           rab_value: total,
         });
       }
     }
-  }, [data.rab_value, data.ppn, data.pph, selectedOption, selectedRka]);
-
-  useEffect(() => {
-    const ppn_value = countTax("ppn", ppn, data.sub_total);
-    const pph_value = countTax("pph", pph, data.sub_total);
-    setData({ ...data, ppn: ppn_value, pph: pph_value });
-  }, [ppn, pph, data.sub_total]);
+  }, [data.rab_value, selectedOption, selectedRka]);
 
   return (
     <Form onSubmit={(e) => {
@@ -290,11 +292,12 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
           <Table className="w-100">
             <thead>
               <tr>
-                <th width="5%">#</th>
-                <th width="35%">Paket pengadaan/Uraian</th>
-                <th width="25%">Jumlah Harga</th>
-                <th width="25%">Keterangan</th>
-                <th width="10%"></th>
+                <th width="2%">#</th>
+                <th width="23%">Paket pengadaan/Uraian</th>
+                <th width="20%">Jumlah Harga</th>
+                <th width="15%">Keterangan</th>
+                <th width="8%">PPN/PPh (%)</th>
+                <th width="2%"></th>
               </tr>
             </thead>
             <tbody>
@@ -379,16 +382,55 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
                     />
                   </td>
                   <td>
-                    <Button
-                      type="button"
-                      color=""
-                      onClick={() => deleteRow(row)}
-                    >
-                      <i
-                        className="simple-icon-trash font-weight-bold"
-                        style={{ fontSize: "1.2rem" }}
+                    {selectedOption.find((x) => x.id === row).type === "PKM" && (
+                      <Input
+                        type="number"
+                        className="form-control pr-0 rounded-lg"
+                        value={selectedOption.find((x) => x.id === row).ppn_percentage}
+                        onChange={(e) => {
+                          let newOption = selectedOption.map((option) => {
+                            if (option.id === row) {
+                              return {
+                                ...option,
+                                ppn_percentage: e.target.value,
+                                ppn: countTax(e.target.value, option.value),
+                              };
+                            } else {
+                              return option;
+                            }
+                          });
+                          setSelectedOption(newOption);
+                        }}
                       />
-                    </Button>
+                    )}
+                    {selectedOption.find((x) => x.id === row).type === "FEE_PROJECT" && (
+                      <Input
+                        type="number"
+                        className="form-control pr-0 rounded-lg"
+                        value={selectedOption.find((x) => x.id === row).pph_percentage}
+                        onChange={(e) => {
+                          let newOption = selectedOption.map((option) => {
+                            if (option.id === row) {
+                              return {
+                                ...option,
+                                pph_percentage: e.target.value,
+                                pph: countTax(e.target.value, option.value),
+                              };
+                            } else {
+                              return option;
+                            }
+                          });
+                          setSelectedOption(newOption);
+                        }}
+                      />
+                    )}
+                  </td>
+                  <td>
+                    <i
+                      onClick={() => deleteRow(row)}
+                      className="simple-icon-trash font-weight-bold c-pointer"
+                      style={{ fontSize: "1.2rem" }}
+                    />
                   </td>
                 </tr>
               ))}
@@ -402,88 +444,6 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
           >
             Tambah barang/jasa
           </Button>
-          <FormGroup className="mt-4">
-            <Label>Subtotal</Label>
-            <InputGroup>
-              <InputGroupAddon addonType="append">
-                <div
-                  className="d-flex align-items-center px-3"
-                  style={{
-                    background: "#E0E7EC",
-                  }}
-                >
-                  IDR
-                </div>
-              </InputGroupAddon>
-              <CurrencyFormat
-                readOnly={true}
-                thousandSeparator={true}
-                prefix={"Rp"}
-                className="form-control"
-                value={data.sub_total}
-              />
-            </InputGroup>
-          </FormGroup>
-          <Row>
-            <Colxx xxs="2">
-              <FormGroup>
-                <Label>PPN</Label>
-                <CurrencyFormat
-                  required={true}
-                  suffix="%"
-                  className="form-control"
-                  value={ppn}
-                  onValueChange={(e) => {
-                    const { value } = e;
-                    const result = parseInt(value) ? parseInt(value) : 0;
-                    setPpn(result);
-                  }}
-                />
-              </FormGroup>
-            </Colxx>
-            <Colxx xxs="10">
-              <FormGroup>
-                <Label>Nilai PPN</Label>
-                <CurrencyFormat
-                  readOnly={true}
-                  thousandSeparator={true}
-                  prefix={"Rp"}
-                  className="form-control"
-                  value={data.ppn}
-                />
-              </FormGroup>
-            </Colxx>
-          </Row>
-          <Row>
-            <Colxx xxs="2">
-              <FormGroup>
-                <Label>PPH</Label>
-                <CurrencyFormat
-                  required={true}
-                  suffix="%"
-                  className="form-control"
-                  value={pph}
-                  onValueChange={(e) => {
-                    const { value } = e;
-                    const result = parseInt(value) ? parseInt(value) : 0;
-                    setPph(result);
-                  }}
-                />
-              </FormGroup>
-            </Colxx>
-            <Colxx xxs="10">
-              <FormGroup>
-                <Label>Nilai PPH</Label>
-                <CurrencyFormat
-                  readOnly={true}
-                  thousandSeparator={true}
-                  prefix={"Rp"}
-                  className="form-control"
-                  value={data.pph}
-                />
-              </FormGroup>
-            </Colxx>
-          </Row>
           <FormGroup>
             <Label>Total</Label>
             <InputGroup>
@@ -526,13 +486,15 @@ const RabForm = ({ getRkaListAction, rkaItems, loading, loading2, onSubmit }) =>
           </Row>
         </CardBody>
       </Card>
-      {loading2 ? (
-        <Button size="lg" color="primary w-100 btn-shadow">
-          Ajukan
-        </Button>
-      ) : (
-        <div className="loading position-relative" />
-      )}
+      {
+        loading2 ? (
+          <Button size="lg" color="primary w-100 btn-shadow">
+            Ajukan
+          </Button>
+        ) : (
+          <div className="loading position-relative" />
+        )
+      }
     </Form >
   );
 };

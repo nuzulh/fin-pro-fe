@@ -40,7 +40,7 @@ const RpbListView = ({
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    getRpbListAction(state.pkm_id);
+    getRpbListAction(state.pkm_id, state.status);
   }, []);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const RpbListView = ({
     }
   }, [error, actionError]);
 
-  return loading && rpbItems && rpbItems[0].rab ? (
+  return loading && rpbItems && rpbItems[0].pkm_draft && rpbItems[0].pkm_draft.rab ? (
     <>
       <Colxx xxs="12">
         <Row className="mx-1 mb-3 justify-content-between">
@@ -99,11 +99,11 @@ const RpbListView = ({
                   </FormGroup>
                   <FormGroup>
                     <Label>No. RAB</Label>
-                    <p className="pl-3">{rpbItems[0].rab.rab_no}</p>
+                    <p className="pl-3">{rpbItems[0].pkm_draft.rab.rab_no}</p>
                   </FormGroup>
                   <FormGroup>
                     <Label>Judul RAB</Label>
-                    <p className="pl-3">{rpbItems[0].rab.rab_name}</p>
+                    <p className="pl-3">{rpbItems[0].pkm_draft.rab.rab_name}</p>
                   </FormGroup>
                   <FormGroup>
                     <Label>Nilai RAB</Label>
@@ -113,7 +113,7 @@ const RpbListView = ({
                         prefix="Rp"
                         thousandSeparator={true}
                         displayType={"text"}
-                        value={rpbItems[0].rab.rab_value}
+                        value={rpbItems[0].pkm_draft.rab.rab_value}
                       />
                     </p>
                   </FormGroup>
@@ -182,36 +182,18 @@ const RpbListView = ({
                   ))}
                 </tbody>
               </Table>
-              <Row>
-                <Colxx xxs="6">
-                  <FormGroup>
-                    <Label>PPN</Label>
-                    <p className="pl-3">
-                      <CurrencyFormat
-                        className="font-weight-bold"
-                        prefix="Rp"
-                        thousandSeparator={true}
-                        displayType={"text"}
-                        value={rpbItems[0].ppn}
-                      />
-                    </p>
-                  </FormGroup>
-                </Colxx>
-                <Colxx xxs="6">
-                  <FormGroup>
-                    <Label>PPH</Label>
-                    <p className="pl-3">
-                      <CurrencyFormat
-                        className="font-weight-bold"
-                        prefix="Rp"
-                        thousandSeparator={true}
-                        displayType={"text"}
-                        value={rpbItems[0].pph}
-                      />
-                    </p>
-                  </FormGroup>
-                </Colxx>
-              </Row>
+              <FormGroup>
+                <Label>PPN</Label>
+                <p className="pl-3">
+                  <CurrencyFormat
+                    className="font-weight-bold"
+                    prefix="Rp"
+                    thousandSeparator={true}
+                    displayType={"text"}
+                    value={rpbItems[0].pkm_draft.ppn}
+                  />
+                </p>
+              </FormGroup>
               <FormGroup>
                 <Label className="font-weight-bold">Total</Label>
                 <p className="pl-3">

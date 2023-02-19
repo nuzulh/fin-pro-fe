@@ -7,12 +7,12 @@ import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Button, Row } from "reactstrap";
-import { addPersekotItem, editPersekotItem } from "redux/actions";
+import { addPersekotItem } from "redux/actions";
 import BackButton from "widgets/common/BackButton";
 import ImportModal from "widgets/common/ImportModal";
 import PersekotForm from "widgets/persekot/InputForm";
 
-const PersekotAdd = ({ match, addPersekotItemAction, editPersekotItemAction, loading, error }) => {
+const PersekotAdd = ({ match, addPersekotItemAction, error }) => {
   const history = useHistory();
   const [showImport, setShowImport] = useState(false);
 
@@ -49,16 +49,14 @@ const PersekotAdd = ({ match, addPersekotItemAction, editPersekotItemAction, loa
               let valid = true;
               item.persekot_detail.forEach((x) => x.category_id === -1 ? valid = false : null);
               if (valid) {
-                if (item.persekot_id) {
-                  addPersekotItemAction(item, history);
-                } else {
-                  addPersekotItemAction(item, history);
-                }
+                addPersekotItemAction({
+                  ...item,
+                  persekot_draft_id: item.persekot_id,
+                }, history);
               } else {
                 NotificationManager.warning("Kategori harus diisi!", "Peringatan", 3000, null, null, "");
               }
             }}
-            loading2={loading}
           />
         </Colxx>
       </Row>
@@ -81,6 +79,5 @@ const mapStateToProps = ({ persekot }) => {
 export default injectIntl(
   connect(mapStateToProps, {
     addPersekotItemAction: addPersekotItem,
-    editPersekotItemAction: editPersekotItem,
   })(PersekotAdd)
 );

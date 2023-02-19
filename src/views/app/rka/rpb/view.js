@@ -9,15 +9,8 @@ const RpbView = ({ match }) => {
     <Row>
       <Colxx xxs="12">
         <Row>
-          <Colxx xxs="12" className="d-flex justify-content-between">
-            <div>
-              <BreadcrumbContainer heading="menu.rpb" match={match} />
-            </div>
-            <Link to="add">
-              <Button color="primary btn-shadow" size="lg">
-                Buat RPB baru
-              </Button>
-            </Link>
+          <Colxx xxs="12">
+            <BreadcrumbContainer heading="menu.rpb" match={match} />
           </Colxx>
         </Row>
         <Separator className="mb-4" />

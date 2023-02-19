@@ -12,7 +12,7 @@ import BackButton from "widgets/common/BackButton";
 import ImportModal from "widgets/common/ImportModal";
 import RpbForm from "widgets/rpb/InputForm";
 
-const RpbAdd = ({ match, addRpbItemAction, loading, error }) => {
+const RpbAdd = ({ match, addRpbItemAction, error }) => {
   const history = useHistory();
   const [showImport, setShowImport] = useState(false);
 
@@ -49,16 +49,14 @@ const RpbAdd = ({ match, addRpbItemAction, loading, error }) => {
               let valid = true;
               item.pkm_detail.forEach((x) => x.category_id === -1 ? valid = false : null);
               if (valid) {
-                if (item.pkm_id) {
-                  addRpbItemAction(item, history);
-                } else {
-                  addRpbItemAction(item, history);
-                }
+                addRpbItemAction({
+                  ...item,
+                  pkm_draft_id: item.pkm_id,
+                }, history);
               } else {
                 NotificationManager.warning("Kategori harus diisi!", "Peringatan", 3000, null, null, "");
               }
             }}
-            loading2={loading}
           />
         </Colxx>
       </Row>

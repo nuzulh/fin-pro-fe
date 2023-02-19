@@ -9,15 +9,8 @@ const PersekotView = ({ match }) => {
     <Row>
       <Colxx xxs="12">
         <Row>
-          <Colxx xxs="12" className="d-flex justify-content-between">
-            <div>
-              <BreadcrumbContainer heading="menu.persekot" match={match} />
-            </div>
-            <Link to="add">
-              <Button color="primary btn-shadow" size="lg">
-                Buat Persekot baru
-              </Button>
-            </Link>
+          <Colxx xxs="12">
+            <BreadcrumbContainer heading="menu.persekot" match={match} />
           </Colxx>
         </Row>
         <Separator className="mb-4" />

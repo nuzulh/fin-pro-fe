@@ -108,7 +108,7 @@ const PersekotDetailItem = ({
     }
   }, [details]);
 
-  return loading && persekotItems && details && persekotItems[0].rab ? (
+  return loading && persekotItems && details && persekotItems[0].persekot_draft && persekotItems[0].persekot_draft.rab ? (
     <>
       <Colxx xxs="12">
         <Row className="mx-1 mb-3 justify-content-between">
@@ -147,11 +147,11 @@ const PersekotDetailItem = ({
                   </FormGroup>
                   <FormGroup>
                     <Label>No. RAB</Label>
-                    <p className="pl-3">{persekotItems[0].rab.rab_no}</p>
+                    <p className="pl-3">{persekotItems[0].persekot_draft.rab.rab_no}</p>
                   </FormGroup>
                   <FormGroup>
                     <Label>Judul RAB</Label>
-                    <p className="pl-3">{persekotItems[0].rab.rab_name}</p>
+                    <p className="pl-3">{persekotItems[0].persekot_draft.rab.rab_name}</p>
                   </FormGroup>
                   <FormGroup>
                     <Label>Nilai RAB</Label>
@@ -161,7 +161,7 @@ const PersekotDetailItem = ({
                         prefix="Rp"
                         thousandSeparator={true}
                         displayType={"text"}
-                        value={persekotItems[0].rab.rab_value}
+                        value={persekotItems[0].persekot_draft.rab.rab_value}
                       />
                     </p>
                   </FormGroup>
@@ -314,36 +314,6 @@ const PersekotDetailItem = ({
                 </>
               ) : (
                 <>
-                  <Row>
-                    <Colxx xxs="6">
-                      <FormGroup>
-                        <Label>PPN</Label>
-                        <p className="pl-3">
-                          <CurrencyFormat
-                            className="font-weight-bold"
-                            prefix="Rp"
-                            thousandSeparator={true}
-                            displayType={"text"}
-                            value={persekotItems[0].ppn}
-                          />
-                        </p>
-                      </FormGroup>
-                    </Colxx>
-                    <Colxx xxs="6">
-                      <FormGroup>
-                        <Label>PPH</Label>
-                        <p className="pl-3">
-                          <CurrencyFormat
-                            className="font-weight-bold"
-                            prefix="Rp"
-                            thousandSeparator={true}
-                            displayType={"text"}
-                            value={persekotItems[0].pph}
-                          />
-                        </p>
-                      </FormGroup>
-                    </Colxx>
-                  </Row>
                   <FormGroup>
                     <Label className="font-weight-bold">Total</Label>
                     <p className="pl-3">

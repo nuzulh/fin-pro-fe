@@ -150,9 +150,10 @@ const RabListView = ({
                 <thead>
                   <tr>
                     <th width="5%">#</th>
-                    <th width="40%">Paket pengadaan/Uraian</th>
-                    <th width="30%">Jumlah Harga</th>
-                    <th width="25%">Keterangan</th>
+                    <th width="25%">Paket pengadaan/Uraian</th>
+                    <th width="25%">Jumlah Harga</th>
+                    <th width="15%">Keterangan</th>
+                    <th width="25%">PPN/PPh</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -174,54 +175,34 @@ const RabListView = ({
                         />
                       </td>
                       <td>{detail.type}</td>
+                      <td>
+                        <CurrencyFormat
+                          prefix="Rp"
+                          thousandSeparator={true}
+                          displayType="text"
+                          value={detail.type === "PKM" ? detail.ppn
+                            : detail.type === "FEE_PROJECT" ? detail.pph
+                              : "-"}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
               <FormGroup>
-                <Label>Subtotal</Label>
+                <Label className="font-weight-bold">Subtotal</Label>
                 <p className="pl-3">
                   <CurrencyFormat
                     className="font-weight-bold"
                     prefix="Rp"
                     thousandSeparator={true}
                     displayType={"text"}
-                    value={rabItems[0].total_detail_value}
+                    value={rabItems[0].rab_detail && rabItems[0].rab_detail.map((x) => x.value).reduce((a, b) => a + b)}
                   />
                 </p>
               </FormGroup>
-              <Row>
-                <Colxx xxs="6">
-                  <FormGroup>
-                    <Label>PPN</Label>
-                    <p className="pl-3">
-                      <CurrencyFormat
-                        className="font-weight-bold"
-                        prefix="Rp"
-                        thousandSeparator={true}
-                        displayType={"text"}
-                        value={rabItems[0].ppn}
-                      />
-                    </p>
-                  </FormGroup>
-                </Colxx>
-                <Colxx xxs="6">
-                  <FormGroup>
-                    <Label>PPH</Label>
-                    <p className="pl-3">
-                      <CurrencyFormat
-                        className="font-weight-bold"
-                        prefix="Rp"
-                        thousandSeparator={true}
-                        displayType={"text"}
-                        value={rabItems[0].pph}
-                      />
-                    </p>
-                  </FormGroup>
-                </Colxx>
-              </Row>
               <FormGroup>
-                <Label className="font-weight-bold">Total</Label>
+                <Label className="font-weight-bold">Total (Incl. PPN/PPh)</Label>
                 <p className="pl-3">
                   <CurrencyFormat
                     className="font-weight-bold"
