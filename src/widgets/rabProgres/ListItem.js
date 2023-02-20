@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import {
   Card,
   CardBody,
+  Row,
 } from "reactstrap";
 import { NavLink } from "react-router-dom";
-import { Colxx } from "components/common/CustomBootstrap";
+import { Colxx, Separator } from "components/common/CustomBootstrap";
 import { getCurrentUser, getDateWithFormat } from "helpers/Utils";
 import CurrencyFormat from "react-currency-format";
 import { adminRoot } from "constants/defaultValues";
@@ -52,78 +53,56 @@ const RabProgresListItem = ({ item }) => {
           </CardBody>
         </div>
         {showDetail && (
-          <div className="d-flex align-items-end justify-content-between">
-            <div className="mx-1 mb-3 align-self-end w-100">
-              <div className="mx-4 d-flex flex-column text-right">
-                <span className="my-1">
-                  <span>Total Persekot Draft ({item.persekot_draft.length}): </span>
-                  <strong>
-                    <CurrencyFormat
-                      prefix="Rp"
-                      thousandSeparator={true}
-                      displayType="text"
-                      value={[...item.persekot_draft.map((x) => x.persekot_balance)].length > 0 ? [...item.persekot_draft.map((x) => x.persekot_balance)].reduce((a, b) => a + b) : 0}
-                    />
-                  </strong>
-                </span>
-                <span className="my-1">
-                  <span>Total Persekot ({item.persekot.length}): </span>
-                  <strong>
-                    <CurrencyFormat
-                      prefix="Rp"
-                      thousandSeparator={true}
-                      displayType="text"
-                      value={[...item.persekot.map((x) => x.persekot_value)].length > 0 ? [...item.persekot.map((x) => x.persekot_value)].reduce((a, b) => a + b) : 0}
-                    />
-                  </strong>
-                </span>
-                <span className="my-1">
-                  <span>Total RPB Draft ({item.pkm_draft.length}): </span>
-                  <strong>
-                    <CurrencyFormat
-                      prefix="Rp"
-                      thousandSeparator={true}
-                      displayType="text"
-                      value={[...item.pkm_draft.map((x) => x.pkm_balance)].length > 0 ? [...item.pkm_draft.map((x) => x.pkm_balance)].reduce((a, b) => a + b) : 0}
-                    />
-                  </strong>
-                </span>
-                <span className="my-1">
-                  <span>Total RPB ({item.pkm.length}): </span>
-                  <strong>
-                    <CurrencyFormat
-                      prefix="Rp"
-                      thousandSeparator={true}
-                      displayType="text"
-                      value={[...item.pkm.map((x) => x.pkm_value)].length > 0 ? [...item.pkm.map((x) => x.pkm_value)].reduce((a, b) => a + b) : 0}
-                    />
-                  </strong>
-                </span>
-                <span className="my-1">
-                  <span>Total SPPD ({item.sppd.length}): </span>
-                  <strong>
-                    <CurrencyFormat
-                      prefix="Rp"
-                      thousandSeparator={true}
-                      displayType="text"
-                      value={[...item.sppd.map((x) => x.sppd_value)].length > 0 ? [...item.sppd.map((x) => x.sppd_value)].reduce((a, b) => a + b) : 0}
-                    />
-                  </strong>
-                </span>
-                <span className="my-1">
-                  <span>Total Fee Project ({item.fee_project.length}): </span>
-                  <strong>
-                    <CurrencyFormat
-                      prefix="Rp"
-                      thousandSeparator={true}
-                      displayType="text"
-                      value={[...item.fee_project.map((x) => x.fee_project_value)].length > 0 ? [...item.fee_project.map((x) => x.fee_project_value)].reduce((a, b) => a + b) : 0}
-                    />
-                  </strong>
-                </span>
-              </div>
-            </div>
-          </div>
+          <Colxx xxs="12" className="px-4 pb-3">
+            <Separator className="mb-4" />
+            <Row>
+              <Colxx xxs="3">
+                <h6 className="font-weight-bold">Persekot</h6>
+                {item.persekot_draft.length > 0 && item.persekot_draft.map((x, i) => {
+                  return x.persekot.map((y, j) => (
+                    <div key={`${i}_${j}`} className="mb-2">
+                      <strong>({j + 1})</strong>
+                      <p className="m-0">Nilai: {y.persekot_value}</p>
+                      <p className="m-0">Realisasi: {y.persekot_realization}</p>
+                      <p className="m-0">Status: {y.status}</p>
+                    </div>
+                  ));
+                })}
+              </Colxx>
+              <Colxx xxs="3">
+                <h6 className="font-weight-bold">RPB</h6>
+                {item.pkm_draft.length > 0 && item.pkm_draft.map((x, i) => {
+                  return x.pkm.map((y, j) => (
+                    <div key={`${i}_${j}`} className="mb-2">
+                      <strong>({j + 1})</strong>
+                      <p className="m-0">Nilai: {y.pkm_value}</p>
+                      <p className="m-0">Status: {y.status}</p>
+                    </div>
+                  ));
+                })}
+              </Colxx>
+              <Colxx xxs="3">
+                <h6 className="font-weight-bold">SPPD</h6>
+                {item.sppd.map((x, i) => (
+                  <div key={i} className="mb-2">
+                    <strong>({i + 1})</strong>
+                    <p className="m-0">Nilai: {x.sppd_value}</p>
+                    <p className="m-0">Status: {x.status}</p>
+                  </div>
+                ))}
+              </Colxx>
+              <Colxx xxs="3">
+                <h6 className="font-weight-bold">Fee Project</h6>
+                {item.fee_project.map((x, i) => (
+                  <div key={i} className="mb-2">
+                    <strong>({i + 1})</strong>
+                    <p className="m-0">Nilai: {x.fee_project_value}</p>
+                    <p className="m-0">Status: {x.status}</p>
+                  </div>
+                ))}
+              </Colxx>
+            </Row>
+          </Colxx>
         )}
       </Card>
     </Colxx>
