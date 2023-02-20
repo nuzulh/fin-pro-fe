@@ -1,9 +1,9 @@
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import BreadcrumbContainer from "containers/navs/Breadcrumb";
-import React, { useEffect, useState } from "react";
-import { Row } from "reactstrap";
+import React, { useEffect, useRef, useState } from "react";
+import { Button, Row } from "reactstrap";
 import PendingCard from "widgets/dashboard/PendingCard";
-import { getPendingCount } from "redux/actions";
+import { getPendingCount, exportRabSummary } from "redux/actions";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { NotificationManager } from "components/common/react-notifications";
@@ -11,34 +11,76 @@ import { getCurrentUser } from "helpers/Utils";
 import SwitchMenuButton from "widgets/common/SwitchMenuButton";
 import BebanCharts from "widgets/dashboard/charts/beban";
 import PendapatanCharts from "widgets/dashboard/charts/pendapatan";
+import { CSVLink } from "react-csv";
 
 const DashboardView = ({
   match,
   getPendingCountAction,
   pendingCountItem,
   loading,
-  error
+  error,
+  exportRabSummaryAction,
+  summaryHeaders,
+  summaryItems,
+  rabLoading,
+  rabError,
 }) => {
   const user = getCurrentUser();
   const [isOpen1, setIsOpen1] = useState(true);
   const [year, setYear] = useState(new Date().getFullYear());
+  const [isClicked, setIsClicked] = useState(false);
+  const exportRef = useRef();
 
   useEffect(() => {
     getPendingCountAction();
   }, []);
 
   useEffect(() => {
+    if (summaryItems && isClicked) {
+      exportRef.current.link.click();
+      setIsClicked(false);
+    }
+  }, [summaryItems]);
+
+  useEffect(() => {
     if (error !== "") {
       NotificationManager.error(error, "Gagal", 3000, null, null, "");
     }
-  }, [error]);
+    if (rabError !== "") {
+      NotificationManager.error(rabError, "Gagal", 3000, null, null, "");
+    }
+  }, [error, rabError]);
 
   return (
     <Row>
       <Colxx xxs="12">
-        <div className="d-flex align-items-center">
-          <h1>Halo, {user.username}</h1>
-          <BreadcrumbContainer match={match} />
+        <div className="d-flex align-items-center justify-content-between">
+          <div>
+            <h1>Halo, {user.username}</h1>
+            <BreadcrumbContainer match={match} />
+          </div>
+          <Button
+            size="lg"
+            color="primary btn-shadow mb-2"
+            disabled={!rabLoading}
+            onClick={() => {
+              exportRabSummaryAction(summaryHeaders);
+              setIsClicked(true);
+            }}
+          >
+            <i className="iconsminds-data-download mr-1" />
+            Rekap beban
+          </Button>
+          {summaryItems && isClicked && (
+            <CSVLink
+              ref={exportRef}
+              hidden={true}
+              headers={summaryHeaders.map((x) => ({ label: x, key: x }))}
+              data={summaryItems}
+              separator=";"
+              filename="BEBAN_SUMMARY.csv"
+            />
+          )}
         </div>
         <Separator className="mb-4" />
         <div className="d-flex justify-content-between">
@@ -94,12 +136,17 @@ const DashboardView = ({
   );
 };
 
-const mapStateToProps = ({ dashboard }) => {
+const mapStateToProps = ({ dashboard, rab }) => {
   const { pendingCountItem, loading, error } = dashboard;
-  return { pendingCountItem, loading, error };
+  const summaryHeaders = rab.summaryHeaders;
+  const summaryItems = rab.summaryItems;
+  const rabLoading = rab.loading;
+  const rabError = rab.error;
+  return { pendingCountItem, loading, error, summaryHeaders, summaryItems, rabLoading, rabError };
 }
 export default injectIntl(
   connect(mapStateToProps, {
     getPendingCountAction: getPendingCount,
+    exportRabSummaryAction: exportRabSummary,
   })(DashboardView)
 );

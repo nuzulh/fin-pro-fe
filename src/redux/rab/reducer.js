@@ -14,6 +14,9 @@ import {
   RAB_PROGRES_GET_LIST,
   RAB_PROGRES_GET_LIST_SUCCESS,
   RAB_PROGRES_GET_LIST_ERROR,
+  RAB_SUMMARY_EXPORT,
+  RAB_SUMMARY_EXPORT_SUCCESS,
+  RAB_SUMMARY_EXPORT_ERROR,
 } from "../actions";
 
 const INIT_STATE = {
@@ -31,6 +34,20 @@ const INIT_STATE = {
     { column: "rab_name", label: "Judul RAB" },
     { column: "status", label: "Status" },
     { column: "created_date", label: "Tanggal dibuat" },
+  ],
+  summaryItems: null,
+  summaryHeaders: [
+    "No.",
+    "No. RAB",
+    "Judul RAB",
+    "Nilai RAB",
+    "Realisasi Persekot",
+    "Realisasi LPJ Persekot",
+    "Realisasi SPPD",
+    "Realisasi Fee Project",
+    "Realisasi RPB",
+    "Total Realisasi",
+    "Selisih",
   ],
 };
 
@@ -159,6 +176,23 @@ export default (state = INIT_STATE, action) => {
 
     case RAB_PROGRES_GET_LIST_ERROR:
       return { ...state, loading: true, error: action.payload };
+
+    case RAB_SUMMARY_EXPORT:
+      return { ...state, loading: false };
+
+    case RAB_SUMMARY_EXPORT_SUCCESS:
+      return {
+        ...state,
+        summaryItems: action.payload,
+        loading: true,
+      };
+
+    case RAB_SUMMARY_EXPORT_ERROR:
+      return {
+        ...state,
+        error: action.payload,
+        loading: true,
+      };
 
     default:
       return { ...state, error: "" };
