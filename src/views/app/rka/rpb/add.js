@@ -1,6 +1,5 @@
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import { NotificationManager } from "components/common/react-notifications";
-import { adminRoot } from "constants/defaultValues";
 import BreadcrumbContainer from "containers/navs/Breadcrumb";
 import { useEffect, useState } from "react";
 import { injectIntl } from "react-intl";
@@ -9,12 +8,13 @@ import { useHistory } from "react-router-dom";
 import { Button, Row } from "reactstrap";
 import { addRpbItem } from "redux/actions";
 import BackButton from "widgets/common/BackButton";
-import ImportModal from "widgets/common/ImportModal";
+import EntryImportModal from "widgets/common/EntryImportModal";
 import RpbForm from "widgets/rpb/InputForm";
 
 const RpbAdd = ({ match, addRpbItemAction, error }) => {
   const history = useHistory();
   const [showImport, setShowImport] = useState(false);
+  const [uploadedItems, setUploadedItems] = useState(null);
 
   useEffect(() => {
     if (error !== "") {
@@ -57,16 +57,24 @@ const RpbAdd = ({ match, addRpbItemAction, error }) => {
                 NotificationManager.warning("Kategori harus diisi!", "Peringatan", 3000, null, null, "");
               }
             }}
+            uploadedItems={uploadedItems}
           />
         </Colxx>
       </Row>
-      <ImportModal
+      <EntryImportModal
         isOpen={showImport}
         toggle={() => setShowImport(!showImport)}
         onClose={() => setShowImport(false)}
         label="Impor file RPB"
-        type="pkm"
-        redirectTo={`${adminRoot}/rka/beban/prokurmen/rpb/import`}
+        type="PKM"
+        onUploadedItems={(val) => setUploadedItems(val)}
+        templateHeaders={[
+          "Uraian",
+          "Kuantitas",
+          "Satuan",
+          "Nilai",
+          "Jumlah Nilai",
+        ]}
       />
     </>
   )

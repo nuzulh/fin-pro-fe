@@ -13,15 +13,14 @@ import {
   Row,
   Badge,
 } from "reactstrap";
-import Select from "react-select";
 import CustomSelectInput from "components/common/CustomSelectInput";
 import CurrencyFormat from "react-currency-format";
 import { Colxx } from "components/common/CustomBootstrap";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import ItemNoForm from "widgets/common/ItemNoForm";
-import { getRabList, getCategoryList, addCategoryItem, getRpbList } from "redux/actions";
-import { countTax, getCurrentUser } from "helpers/Utils";
+import { getCategoryList, addCategoryItem, getRpbList } from "redux/actions";
+import { getCurrentUser } from "helpers/Utils";
 import Creatable from "react-select/creatable";
 import { NotificationManager } from "components/common/react-notifications";
 import { useLocation } from "react-router-dom";
@@ -38,6 +37,7 @@ const RpbForm = ({
   categoryLoading,
   categoryError,
   onSubmit,
+  uploadedItems,
 }) => {
   const user = getCurrentUser();
   const state = useLocation().state;
@@ -105,6 +105,23 @@ const RpbForm = ({
       setSelectedOption(newOption);
     }
   };
+
+  useEffect(() => {
+    if (uploadedItems) {
+      setRows([...uploadedItems.map((_, i) => i + 1)]);
+      setSelectedOption([...uploadedItems.map((x, i) => ({
+        id: i + 1,
+        description: x["Uraian"],
+        pkm_quantity: parseInt(x["Kuantitas"]),
+        pkm_sub_total: parseInt(x["Nilai"]),
+        pkm_detail_price: parseInt(x["Jumlah Nilai"]),
+        category_id: categoryItems.find((c) =>
+          c.category_name.toLowerCase() === x["Satuan"].toLowerCase())
+          .category_id,
+      }))]);
+      setData({ ...data, pkm_value: uploadedItems.map((x) => parseInt(x["Jumlah Nilai"])).reduce((a, b) => a + b) })
+    }
+  }, [uploadedItems, categoryItems]);
 
   useEffect(() => {
     getCategoryListAction("pkm");

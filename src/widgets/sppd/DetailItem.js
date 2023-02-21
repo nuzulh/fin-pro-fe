@@ -177,14 +177,14 @@ const SppdDetailItem = ({
                 </tbody>
               </Table>
               <FormGroup>
-                <Label className="font-weight-bold">Total</Label>
+                <Label className="font-weight-bold">Total nilai rincian</Label>
                 <p className="pl-3">
                   <CurrencyFormat
                     className="font-weight-bold"
                     prefix="Rp"
                     thousandSeparator={true}
                     displayType={"text"}
-                    value={sppdItems[0].sppd_value}
+                    value={sppdItems[0].sppd_detail.map((x) => x.sppd_detail_value).reduce((a, b) => a + b)}
                   />
                 </p>
               </FormGroup>

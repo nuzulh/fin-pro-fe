@@ -179,14 +179,26 @@ const FeeDetailItem = ({
                 </tbody>
               </Table>
               <FormGroup>
-                <Label className="font-weight-bold">Total</Label>
+                <Label className="font-weight-bold">Nilai PPh</Label>
                 <p className="pl-3">
                   <CurrencyFormat
                     className="font-weight-bold"
                     prefix="Rp"
                     thousandSeparator={true}
                     displayType={"text"}
-                    value={feeItems[0].fee_project_value}
+                    value={feeItems[0].pph}
+                  />
+                </p>
+              </FormGroup>
+              <FormGroup>
+                <Label className="font-weight-bold">Total nilai rincian</Label>
+                <p className="pl-3">
+                  <CurrencyFormat
+                    className="font-weight-bold"
+                    prefix="Rp"
+                    thousandSeparator={true}
+                    displayType={"text"}
+                    value={feeItems[0].fee_project_detail.map((x) => parseInt(x.fee_project_detail_value)).reduce((a, b) => a + b)}
                   />
                 </p>
               </FormGroup>

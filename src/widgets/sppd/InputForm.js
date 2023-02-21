@@ -33,6 +33,7 @@ const SppdForm = ({
   loading,
   loading2,
   onSubmit,
+  uploadedItems,
 }) => {
   const user = getCurrentUser();
   const location = useLocation();
@@ -109,6 +110,23 @@ const SppdForm = ({
     getSppdListAction(location.state.sppd_id);
   }, []);
 
+  useEffect(() => {
+    if (uploadedItems) {
+      setRows([...uploadedItems.map((_, i) => i + 1)]);
+      setSelectedOption([...uploadedItems.map((x, i) => ({
+        id: i + 1,
+        unit: x["Unit"],
+        sppd_detail_id: uuidv4(),
+        departure_date: Date.parse(x["Tgl. Berangkat"].includes("-")
+          ? x["Tgl. Berangkat"] : x["Tgl. Berangkat"].split("/").reverse().join("-")),
+        return_date: Date.parse(x["Tgl. Pulang"].includes("-")
+          ? x["Tgl. Pulang"] : x["Tgl. Pulang"].split("/").reverse().join("-")),
+        sppd_detail_value: parseInt(x["Nilai"]),
+        department: x["Dept./PIC"],
+      }))]);
+      setData({ ...data, sppd_value: uploadedItems.map((x) => parseInt(x["Nilai"])).reduce((a, b) => a + b) })
+    }
+  }, [uploadedItems]);
 
   useEffect(() => {
     let sub_total = 0;
@@ -372,7 +390,7 @@ const SppdForm = ({
               Tambah transaksi
             </Button>
             <FormGroup>
-              <Label>Total</Label>
+              <Label>Total nilai rincian</Label>
               <InputGroup>
                 <InputGroupAddon addonType="append">
                   <div

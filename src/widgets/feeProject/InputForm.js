@@ -33,13 +33,13 @@ const FeeForm = ({
   loading,
   loading2,
   onSubmit,
+  uploadedItems,
 }) => {
   const user = getCurrentUser();
   const location = useLocation();
 
   const [data, setData] = useState({
     fee_project_no: "",
-    pph: 0,
     sub_total: 0,
     fee_project_value: 0,
     fee_project_detail: [],
@@ -114,6 +114,24 @@ const FeeForm = ({
     getFeeListAction(location.state.fee_project_id);
   }, []);
 
+  useEffect(() => {
+    if (uploadedItems) {
+      setRows([...uploadedItems.map((_, i) => i + 1)]);
+      setSelectedOption([...uploadedItems.map((x, i) => ({
+        id: i + 1,
+        unit: x["Unit"],
+        no_memo: x["No. Memo"],
+        fee_project_detail_id: uuidv4(),
+        departure_date: Date.parse(x["Tgl. Berangkat"].includes("-")
+          ? x["Tgl. Berangkat"] : x["Tgl. Berangkat"].split("/").reverse().join("-")),
+        return_date: Date.parse(x["Tgl. Pulang"].includes("-")
+          ? x["Tgl. Pulang"] : x["Tgl. Pulang"].split("/").reverse().join("-")),
+        fee_project_detail_value: parseInt(x["Nilai"]),
+        department: x["Dept./PIC"],
+      }))]);
+      setData({ ...data, fee_project_value: uploadedItems.map((x) => parseInt(x["Nilai"])).reduce((a, b) => a + b) })
+    }
+  }, [uploadedItems]);
 
   useEffect(() => {
     let sub_total = 0;
@@ -426,7 +444,7 @@ const FeeForm = ({
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Total</Label>
+                  <Label>Total nilai rincian</Label>
                   <InputGroup>
                     <InputGroupAddon addonType="append">
                       <div

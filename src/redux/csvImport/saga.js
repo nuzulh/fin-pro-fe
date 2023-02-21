@@ -1,11 +1,18 @@
 import { all, call, fork, put, takeEvery } from "redux-saga/effects";
-import { CSV_IMPORT, CSV_GENERATE } from "redux/actions";
+import {
+  CSV_IMPORT,
+  CSV_GENERATE,
+  CSV_ENTRY_IMPORT,
+} from "redux/actions";
 import {
   importCsvSuccess,
   importCsvError,
   generateCsvSuccess,
   generateCsvError,
+  entryImportCsvSuccess,
+  entryImportCsvError,
 } from "./actions";
+import { getCategoryListSuccess } from "redux/actions";
 import axios from "axios";
 import { servicePath } from "constants/defaultValues";
 import { getCurrentUser } from "helpers/Utils";
@@ -86,6 +93,58 @@ function* generateCsv({ payload }) {
   }
 }
 
+const entryImportCsvRequest = async (items) => {
+  const user = getCurrentUser();
+  const categories = await axios
+    .get(`${servicePath}/category`, {
+      headers: {
+        "X-Secured-With": user.token,
+      }
+    })
+    .then((res) => res.data.data)
+    .catch((err) => err.response.data.errorMessage);
+  const allCategories = categories.map((x) => x.category_name);
+
+  const persekotCategories = [...new Set(items.map((x) => x["Kategori"]))]
+  if (persekotCategories[0] !== undefined) {
+    persekotCategories.map(async (name) => {
+      if (!allCategories.includes(name)) {
+        await axios.post(`${servicePath}/category`, {
+          category_name: name,
+          category_type: "PERSEKOT",
+        }, {
+          headers: { "X-Secured-With": user.token },
+        });
+      }
+    });
+  }
+
+  const rpbCategories = [...new Set(items.map((x) => x["Satuan"]))]
+  if (rpbCategories[0] !== undefined) {
+    rpbCategories.map(async (name) => {
+      if (!allCategories.includes(name)) {
+        await axios.post(`${servicePath}/category`, {
+          category_name: name,
+          category_type: "PKM",
+        }, {
+          headers: { "X-Secured-With": user.token },
+        });
+      }
+    });
+  }
+
+  return items;
+};
+
+function* entryImportCsv({ payload }) {
+  try {
+    const entryItems = yield call(entryImportCsvRequest, payload);
+    yield put(entryImportCsvSuccess(entryItems));
+  } catch (error) {
+    yield put(entryImportCsvError(error.toString()));
+  }
+}
+
 export function* watchImportCsv() {
   yield takeEvery(CSV_IMPORT, importCsv);
 }
@@ -94,9 +153,14 @@ export function* watchGenerateCsv() {
   yield takeEvery(CSV_GENERATE, generateCsv);
 }
 
+export function* watchEntryImportCsv() {
+  yield takeEvery(CSV_ENTRY_IMPORT, entryImportCsv);
+}
+
 export default function* rootSaga() {
   yield all([
     fork(watchImportCsv),
     fork(watchGenerateCsv),
+    fork(watchEntryImportCsv),
   ]);
 }
