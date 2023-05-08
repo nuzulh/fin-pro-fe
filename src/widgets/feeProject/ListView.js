@@ -59,7 +59,7 @@ const FeeListView = ({
               <ListItem
                 key={index}
                 item={item}
-                editable={true}
+                editable={false}
                 onEdit={(val) => editFeeItemAction(item.fee_project_id, val, false)}
               />
             ))

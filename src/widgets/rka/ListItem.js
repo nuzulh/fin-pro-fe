@@ -141,8 +141,8 @@ const RkaListItem = ({
               </CardBody>
             </div>
             {showDetail && !isImport && (
-              <div className="d-flex align-items-end justify-content-between">
-                <Button
+              <div className="d-flex align-items-end justify-content-end">
+                {/* <Button
                   color="primary btn-shadow m-4"
                   onClick={() => {
                     setNewValue(item);
@@ -150,7 +150,7 @@ const RkaListItem = ({
                   }}
                 >
                   Edit
-                </Button>
+                </Button> */}
                 <div className="mx-1 mb-3 align-self-end">
                   <div className="mx-4 d-flex flex-column text-right">
                     <span className="my-1">
@@ -161,6 +161,17 @@ const RkaListItem = ({
                           thousandSeparator={true}
                           displayType="text"
                           value={item.rka_value || 0}
+                        />
+                      </strong>
+                    </span>
+                    <span className="my-1">
+                      <span>Saldo: </span>
+                      <strong>
+                        <CurrencyFormat
+                          prefix="Rp"
+                          thousandSeparator={true}
+                          displayType="text"
+                          value={item.balance || 0}
                         />
                       </strong>
                     </span>

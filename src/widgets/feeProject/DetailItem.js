@@ -116,6 +116,18 @@ const FeeDetailItem = ({
                       />
                     </p>
                   </FormGroup>
+                  <FormGroup>
+                    <Label>Sisa Nilai Fee Project</Label>
+                    <p className="pl-3">
+                      <CurrencyFormat
+                        className="font-weight-bold"
+                        prefix="Rp"
+                        thousandSeparator={true}
+                        displayType={"text"}
+                        value={feeItems[0].fee_project_detail ? feeItems[0].fee_project_value - feeItems[0].fee_project_detail.map((x) => parseInt(x.fee_project_detail_value)).reduce((a, b) => a + b) : 0}
+                      />
+                    </p>
+                  </FormGroup>
                 </>
               )}
             </CardBody>

@@ -67,7 +67,7 @@ const RpbListView = ({
                 key={index}
                 item={item}
                 isImport={importItems !== undefined}
-                editable={!importItems}
+                editable={false}
                 onEdit={(val) => editRpbItemAction(item.pkm_id, val)}
               />
             ))

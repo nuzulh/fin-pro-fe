@@ -38,6 +38,7 @@ const UploadModal = ({
   const [hover, setHover] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [img, setImg] = useState(null);
+  const [pdfLink, setPdfLink] = useState(null);
 
   const handleUpload = (e) => {
     const files = Array.prototype.slice.call(e.target.files);
@@ -68,22 +69,27 @@ const UploadModal = ({
   const showMedia = async (file) => {
     if (file.name) {
       if (file.type === "application/pdf") {
-        window.location.href(`${servicePathFiles}/${type}/${itemId}/${subItemId}/${file.name}`);
+        setPdfLink(file);
       } else {
         setImg(file);
       }
     } else {
-      await axios
-        .get(
-          `${servicePathFiles}/${type}/${itemId}/${subItemId}/${file}`,
-          {
-            responseType: "blob",
-            headers: { "X-Secured-With": user.token },
-          }
-        )
-        .then((res) => {
-          setImg(res.data);
-        });
+      if (file.endsWith(".pdf")) {
+        console.log(file);
+        setPdfLink(`${servicePathFiles}/${type}/${itemId}/${subItemId}/${file}`);
+      } else {
+        await axios
+          .get(
+            `${servicePathFiles}/${type}/${itemId}/${subItemId}/${file}`,
+            {
+              responseType: "blob",
+              headers: { "X-Secured-With": user.token },
+            }
+          )
+          .then((res) => {
+            setImg(res.data);
+          });
+      }
     }
   };
 

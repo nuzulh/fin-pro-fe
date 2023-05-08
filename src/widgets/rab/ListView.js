@@ -66,7 +66,7 @@ const RabListView = ({
                 key={index}
                 item={item}
                 isImport={importItems !== undefined}
-                editable={!importItems}
+                editable={false}
                 onEdit={(val) => editRabItemAction(item.rab_id, val)}
               />
             ))

@@ -421,7 +421,7 @@ const FeeForm = ({
             </Button>
             {loading && feeItems && feeItems[0] ? (
               <>
-                <FormGroup>
+                {/* <FormGroup>
                   <Label>Nilai PPh</Label>
                   <InputGroup>
                     <InputGroupAddon addonType="append">
@@ -442,7 +442,7 @@ const FeeForm = ({
                       value={feeItems[0].pph}
                     />
                   </InputGroup>
-                </FormGroup>
+                </FormGroup> */}
                 <FormGroup>
                   <Label>Total nilai rincian</Label>
                   <InputGroup>

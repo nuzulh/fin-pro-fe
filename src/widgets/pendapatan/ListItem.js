@@ -44,7 +44,15 @@ const PendapatanListItem = ({
     no: "",
     value: 0,
   });
-  const [showUpload, setShowUpload] = useState({
+  const [showUploadKontrak, setShowUploadKontrak] = useState({
+    show: false,
+    id: "",
+  });
+  const [showUploadBA, setShowUploadBA] = useState({
+    show: false,
+    id: "",
+  });
+  const [showUploadInvoice, setShowUploadInvoice] = useState({
     show: false,
     id: "",
   });
@@ -109,9 +117,11 @@ const PendapatanListItem = ({
                 </p>
               ) : (
                 <EntryButton label="Input Kontrak" onClick={() => setEntryForm({
-                  ...entryForm,
                   show: true,
                   type: "Kontrak",
+                  date: "",
+                  no: "",
+                  value: ""
                 })} />
               )}
               {item.ba_value !== 0 ? (
@@ -125,9 +135,11 @@ const PendapatanListItem = ({
                 </p>
               ) : (
                 <EntryButton label="Input BA" onClick={() => setEntryForm({
-                  ...entryForm,
                   show: true,
                   type: "BA",
+                  date: "",
+                  no: "",
+                  value: ""
                 })} />
               )}
               {item.invoice_value !== 0 ? (
@@ -141,9 +153,11 @@ const PendapatanListItem = ({
                 </p>
               ) : (
                 <EntryButton label="Input Invoice" onClick={() => setEntryForm({
-                  ...entryForm,
                   show: true,
                   type: "Invoice",
+                  date: "",
+                  no: "",
+                  value: ""
                 })} />
               )}
             </CardBody>
@@ -217,10 +231,22 @@ const PendapatanListItem = ({
                           if (entryForm.no === "" && entryForm.value === 0) {
                             NotificationManager.warning("Mohon isi kelengkapan isian terlebih dahulu sebelum mengupload berkas!", "Peringatan", 3000, null, null, "");
                           } else {
-                            setShowUpload({
-                              show: true,
-                              id: entryForm.no.split("/").join("-"),
-                            })
+                            if (entryForm.type === "Kontrak") {
+                              setShowUploadKontrak({
+                                show: true,
+                                id: entryForm.no.split("/").join("-"),
+                              });
+                            } else if (entryForm.type === "BA") {
+                              setShowUploadBA({
+                                show: true,
+                                id: entryForm.no.split("/").join("-"),
+                              });
+                            } else if (entryForm.type === "Invoice") {
+                              setShowUploadInvoice({
+                                show: true,
+                                id: entryForm.no.split("/").join("-"),
+                              });
+                            }
                           }
                         }}
                       >
@@ -259,15 +285,37 @@ const PendapatanListItem = ({
         </Card>
       </Colxx>
       <UploadModal
-        isOpen={showUpload.show}
-        toggle={() => setShowUpload(!showUpload.show)}
+        isOpen={showUploadKontrak.show}
+        toggle={() => setShowUploadKontrak(!showUploadKontrak.show)}
         label={`Bukti transaksi ${entryForm.type}`}
         subLabel={`Silahkan unggah transaksi ${entryForm.type}`}
         fileTypes={["JPG", "PNG", "PDF"]}
         type="income"
-        onClose={() => setShowUpload(false)}
+        onClose={() => setShowUploadKontrak(false)}
         itemId={item.income_id}
-        subItemId={showUpload.id}
+        subItemId={showUploadKontrak.id}
+      />
+      <UploadModal
+        isOpen={showUploadBA.show}
+        toggle={() => setShowUploadBA(!showUploadBA.show)}
+        label={`Bukti transaksi ${entryForm.type}`}
+        subLabel={`Silahkan unggah transaksi ${entryForm.type}`}
+        fileTypes={["JPG", "PNG", "PDF"]}
+        type="income"
+        onClose={() => setShowUploadBA(false)}
+        itemId={item.income_id}
+        subItemId={showUploadBA.id}
+      />
+      <UploadModal
+        isOpen={showUploadInvoice.show}
+        toggle={() => setShowUploadInvoice(!showUploadInvoice.show)}
+        label={`Bukti transaksi ${entryForm.type}`}
+        subLabel={`Silahkan unggah transaksi ${entryForm.type}`}
+        fileTypes={["JPG", "PNG", "PDF"]}
+        type="income"
+        onClose={() => setShowUploadInvoice(false)}
+        itemId={item.income_id}
+        subItemId={showUploadInvoice.id}
       />
     </>
   );

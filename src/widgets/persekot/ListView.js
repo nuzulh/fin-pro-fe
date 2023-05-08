@@ -70,7 +70,7 @@ const PersekotListView = ({
                 key={index}
                 item={item}
                 isImport={importItems !== undefined}
-                editable={!importItems}
+                editable={false}
                 onEdit={(val) => editPersekotItemAction(item.persekot_id, val)}
               />
             ))

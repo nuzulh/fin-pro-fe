@@ -59,7 +59,7 @@ const SppdListView = ({
               <ListItem
                 key={index}
                 item={item}
-                editable={true}
+                editable={false}
                 onEdit={(val) => editSppdItemAction(item.sppd_id, val, false)}
               />
             ))
