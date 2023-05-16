@@ -1,5 +1,5 @@
 # build environment
-FROM node:16.15-alpine as builder
+FROM node:16.14.0 as builder
 WORKDIR /app
 COPY . .
 RUN yarn install && yarn build

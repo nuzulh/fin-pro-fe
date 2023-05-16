@@ -16,6 +16,9 @@ import {
   ModalHeader
 } from "reactstrap";
 import { uploadFiles, getFiles, deleteFile } from "redux/upload/actions";
+import { Document, Page, pdfjs } from "react-pdf";
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import "assets/pdf-viewer.css";
 
 const UploadModal = ({
   isOpen,
@@ -75,7 +78,6 @@ const UploadModal = ({
       }
     } else {
       if (file.endsWith(".pdf")) {
-        console.log(file);
         setPdfLink(`${servicePathFiles}/${type}/${itemId}/${subItemId}/${file}`);
       } else {
         await axios
@@ -92,6 +94,26 @@ const UploadModal = ({
       }
     }
   };
+
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+    setPageNumber(1);
+  }
+
+  function changePage(offset) {
+    setPageNumber(prevPageNumber => prevPageNumber + offset);
+  }
+
+  function previousPage() {
+    changePage(-1);
+  }
+
+  function nextPage() {
+    changePage(1);
+  }
 
   useEffect(() => {
     if (subItemId && isOpen) {
@@ -220,6 +242,43 @@ const UploadModal = ({
             </div>
           ))}
         </ModalBody>
+      </Modal>
+      <Modal
+        isOpen={pdfLink !== null}
+        centered
+        toggle={() => setPdfLink(null)}
+        className="shadow-none modal-lg"
+      >
+        <Document
+          file={pdfLink}
+          onLoadSuccess={onDocumentLoadSuccess}
+          loading={<div className="loading" />}
+        >
+          <Page pageNumber={pageNumber} />
+        </Document>
+        <div className="d-flex justify-content-between p-3">
+          <p className="float-left my-auto">
+            Page {pageNumber || (numPages ? 1 : "--")} of {numPages || "--"}
+          </p>
+          <div>
+            <Button
+              color="primary"
+              className="mr-2 btn-shadow"
+              disabled={pageNumber <= 1}
+              onClick={previousPage}
+            >
+              Previous
+            </Button>
+            <Button
+              color="primary"
+              className="btn-shadow"
+              disabled={pageNumber >= numPages}
+              onClick={nextPage}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </Modal>
       <Modal
         isOpen={img !== null}
