@@ -269,8 +269,8 @@ const PekerjaanForm = ({ onSubmit }) => {
                 loading2
                   ? "Loading..."
                   : rab.creation_time !== ""
-                  ? getDateWithFormat(rab.creation_time)
-                  : ""
+                    ? getDateWithFormat(rab.creation_time)
+                    : ""
               }
             />
           </FormGroup>

@@ -70,7 +70,7 @@ const PendapatanForm = ({
   }, [rabError]);
 
   useEffect(() => {
-    const ppn = countTax("ppn", ppnPercentage, data.offer_value);
+    const ppn = countTax(ppnPercentage, data.offer_value);
     if (selectedRab && ppn + data.offer_value > selectedRab.rab_value) {
       NotificationManager.warning("Nilai penawaran melebihi nilai RAB!", "Peringatan", 3000, null, null, "");
     } else {

@@ -262,6 +262,14 @@ const UploadModal = ({
           </p>
           <div>
             <Button
+              outline
+              color="primary"
+              className="mr-2 btn-shadow"
+              onClick={() => window.open(pdfLink, "_blank")}
+            >
+              <i className="iconsminds-data-download" />
+            </Button>
+            <Button
               color="primary"
               className="mr-2 btn-shadow"
               disabled={pageNumber <= 1}
