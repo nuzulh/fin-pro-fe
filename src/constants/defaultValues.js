@@ -97,8 +97,8 @@ export const searchPath = `${adminRoot}/#`;
 export const servicePath = "http://10.1.62.177:5000/api/v1";
 export const servicePathFiles = "http://10.1.62.177:5000/public";
 // // DEVELOPMENT
-export const servicePath = "http://localhost:5000/api/v1";
-export const servicePathFiles = "http://localhost:5000/public";
+// export const servicePath = "http://localhost:5000/api/v1";
+// export const servicePathFiles = "http://localhost:5000/public";
 // export const servicePath = "http://192.168.137.1:5000/api/v1";
 // export const servicePathFiles = "http://192.168.137.1:5000/public";
 // export const servicePath = "https://cogindo.up.railway.app/api/v1";
